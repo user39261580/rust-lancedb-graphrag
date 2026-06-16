@@ -1,14 +1,26 @@
 # Shrag 🚀
 
-**Shrag** is an end-to-end, high-performance, systems-oriented Retrieval-Augmented Generation (RAG) and GraphRAG platform. Built to showcase robust systems engineering and data-plane design, it employs a split-service architecture that separates a user-facing control plane from a high-performance, custom-built data plane.
+> [!NOTE]
+> **Project Status: Planning & Pre-Start Phase**
+> This repository currently contains the architectural design blueprints, brainstorming files, and the implementation plan. No source code has been written yet. Development will begin shortly following the roadmap detailed below.
 
-The architecture splits responsibilities between a user-facing **Go API Gateway** (handling routing, metadata, and orchestration API) and a low-latency, computationally optimized **Rust RAG Engine** (handling document chunking, hybrid retrieval, and knowledge graph traversal). Communication between them is orchestrated via **gRPC** over a structured Protobuf contract.
+**Shrag** is an end-to-end, high-performance, systems-oriented Retrieval-Augmented Generation (RAG) and GraphRAG platform. Built to showcase robust systems engineering and data-plane design, it employs a split-service architecture that separates a user-facing control plane from a high-performance, custom-built data plane.
 
 ---
 
-## 🏗️ Architecture Overview
+## 📖 The Story & Motivation
 
-The diagram below illustrates the split-service architecture, storage strategies, and observability integration:
+Most modern RAG applications are built using high-level orchestration frameworks (like LangChain or LlamaIndex) and pre-packaged API wrappers. While convenient, this approach hides the underlying data-plane complexities, database access patterns, and performance characteristics. 
+
+**Shrag** is a project designed to show high-level backend systems engineering depth by building the core data-plane components from scratch. Instead of using off-the-shelf wrappers, Shrag implements custom chunkers, indexing, query retrieval, and graph traversals in **Rust**, linking them to a lightweight **Go** control-plane gateway via **gRPC**. 
+
+By focusing on custom-built database operations and explicit microservice boundaries, Shrag demonstrates how to optimize latency-sensitive AI workloads while maintaining production-grade type safety and observability.
+
+---
+
+## 🎯 Target Architecture & Core Components
+
+Once implemented, the platform will utilize a split-service architecture:
 
 ```mermaid
 graph TD
@@ -34,137 +46,52 @@ graph TD
     end
 ```
 
----
+### Key Technical Targets
 
-## ✨ Core Features & Technical Highlights
-
-Unlike boilerplate RAG wrappers, Shrag features custom data-plane components built from the ground up in Rust to demonstrate high-level systems design:
-
-1. **Custom Structure-Aware Chunker:** A recursive parser processing heterogeneous document formats (Markdown, JSON, text, etc.) into clean, semantic chunk structures rather than using arbitrary character-count windows.
-2. **Hybrid Vector & Lexical Retriever:** A query composer that combines embedded **LanceDB** dense vector searches with a local, in-memory **BM25 lexical index** and metadata filters.
-3. **GraphRAG Traverser:** A GraphRAG orchestrator utilizing `lance-graph` (the native LanceDB graph engine) to store entities and relationships as Arrow tables, execute Cypher queries to extract relevant subgraphs, and compile prompt contexts.
-4. **gRPC Interface:** Seamless, type-safe inter-service communication defined in [shrag.proto](file:///c:/Users/user3/Shrag/proto/shrag.proto) utilizing `tonic` (Rust) and `google.golang.org/grpc` (Go).
-5. **Distributed Tracing (OpenTelemetry):** Native instrumentation across both Go and Rust boundaries, tracing request lifecycles from the HTTP gateway down to vector search queries and LLM invocations.
-6. **Automated Offline Evaluation:** A Python benchmarking tool utilizing an **LLM-as-a-judge** setup to measure retrieval recall, context precision, and response faithfulness.
+1. **Go API Gateway (Control Plane):** A lightweight, concurrent HTTP REST server in Go to handle user session states, routing, authentication, and document upload schemas, backed by a relational PostgreSQL database.
+2. **Rust RAG Engine (Data Plane):** A computationally optimized, memory-safe, asynchronous gRPC server implementing:
+   - **Structure-Aware Recursive Chunker:** A custom parser processing heterogeneous document formats (Markdown, JSON, text) into semantic units rather than arbitrary text chunks.
+   - **Hybrid vector and lexical retriever:** A query engine combining embedded **LanceDB** dense vector search with a local, in-memory **BM25 lexical index** and metadata filtering.
+   - **GraphRAG Traverser:** A native knowledge graph orchestrator utilizing `lance-graph` (LanceDB's Arrow-based graph engine) to query entity-relation property graphs using Cypher.
+3. **gRPC Interface:** A type-safe Protobuf boundary defined to establish communication between the Go and Rust microservices.
+4. **Distributed Tracing (OpenTelemetry):** Native trace instrumentation across Go, Rust, and LLM boundaries, exporting to a local Jaeger instance to isolate latency bottlenecks.
+5. **LLM-as-a-judge Evaluation:** An offline validation suite in Python to benchmark retrieval recall, precision, and faithfulness.
 
 ---
 
-## 🛠️ Technology Stack
+## 📂 Repository Contents
 
-| Layer | Technology | Rationale / Detail |
-| :--- | :--- | :--- |
-| **Control Plane** | Go (Gin / standard library) | Fast, light backend services, simple concurrency, and rapid API routing. |
-| **Data Plane** | Rust (Tokio, Tonic) | Memory safety, zero-cost abstractions, maximum concurrency, and low latency. |
-| **Vector Database** | LanceDB (Embedded) | Serverless, Arrow-native vector retrieval with negligible runtime overhead. |
-| **Graph Operations** | `lance-graph` | Native LanceDB graph query engine supporting Cypher queries over Arrow tables. |
-| **Metadata Store** | PostgreSQL | Relational storage for user accounts, session states, and document schemas. |
-| **Observability** | OpenTelemetry / Jaeger | Complete distributed tracing across boundaries to isolate latency bottlenecks. |
-| **Evaluation** | Python | Standard ML/LLM scripting harness for running validation tests. |
+Currently, the repository contains the following planning and design documents:
+* [rag_side_project_brainstorming_document.md](file:///d:/Repos/shrag/rag_side_project_brainstorming_document.md): The initial brainstorming log, evaluating system trade-offs, technology choices, and resume impact evaluation.
+* [final_implementation_decision_document.md](file:///d:/Repos/shrag/final_implementation_decision_document.md): The finalized architectural, storage, and custom vs. framework engineering choices.
+* [implementation_plan.md](file:///d:/Repos/shrag/implementation_plan.md): The step-by-step technical plan for bootstrapping the gRPC contracts, directories, and files.
 
 ---
 
-## 📂 Project Directory Structure
+## 🗺️ Implementation Roadmap
 
-```text
-Shrag/
-├── proto/
-│   └── shrag.proto               # Shared gRPC service definitions
-├── engine/                       # Rust RAG Engine (Data Plane)
-│   ├── Cargo.toml
-│   └── src/
-│       ├── main.rs               # gRPC server bootstrap & tracing config
-│       ├── chunker.rs            # Structure-aware recursive chunker
-│       ├── store.rs              # LanceDB driver and vector retrieval
-│       ├── graph.rs              # Entity-relation mapping and Cypher query interface using lance-graph
-│       ├── retriever.rs          # BM25 + LanceDB hybrid query engine
-│       └── orchestrator.rs       # RAG state-machine and LLM orchestrator
-├── gateway/                      # Go API Gateway (Control Plane)
-│   ├── go.mod
-│   ├── main.go                   # HTTP handlers (REST) and gRPC client
-│   └── db.go                     # PGX connection, authentication & session storage
-├── eval/
-│   └── eval.py                   # LLM-as-a-judge benchmarking script
-├── docker-compose.yml            # Infra (Postgres, Jaeger, local services)
-└── README.md                     # Project overview and run instructions
-```
+We will build the codebase across five key phases:
 
----
+### Phase 1: gRPC Contract & Environment Setup
+* Define the protobuf messages and service API in `proto/shrag.proto`.
+* Configure `docker-compose.yml` to spin up PostgreSQL and Jaeger.
+* Scaffold the Rust `engine` and Go `gateway` project workspaces.
 
-## 🚀 Getting Started
+### Phase 2: Rust Data Plane Core
+* Build the custom structure-aware document parser/chunker.
+* Set up LanceDB integration and the in-memory BM25 index.
+* Implement the hybrid retriever logic combining dense search and BM25.
 
-### Prerequisites
+### Phase 3: GraphRAG Capabilities
+* Integrate `lance-graph` within the Rust engine.
+* Implement the LLM-driven entity/relationship extraction pipeline during chunk ingestion.
+* Build the GraphRAG query orchestrator executing Cypher queries to build context.
 
-- [Go](https://go.dev/) (v1.20+)
-- [Rust & Cargo](https://www.rust-lang.org/) (Edition 2021)
-- [Docker & Docker Compose](https://www.docker.com/)
-- [Python 3.10+](https://www.python.org/) (for offline evaluation)
-- API Keys for your preferred LLM provider (e.g., OpenAI, Anthropic, or Gemini) set as environment variables.
+### Phase 4: Control Plane & Gateway
+* Implement the Go HTTP endpoints for document uploading and RAG querying.
+* Hook up PostgreSQL for schema, user sessions, and document metadata.
+* Connect the Go HTTP handlers to the Rust gRPC engine.
 
-### Step 1: Start Infrastructure Containers
-
-Spin up the metadata database (PostgreSQL) and the tracing collector (Jaeger):
-
-```bash
-docker compose up -d
-```
-
-### Step 2: Configure Environment Variables
-
-Create a local `.env` configuration or export the following keys:
-
-```bash
-export OPENAI_API_KEY="your-api-key" # Or Gemini/Anthropic depending on engine setup
-export DATABASE_URL="postgres://user:password@localhost:5432/shrag"
-export ENGINE_GRPC_ADDR="localhost:50051"
-```
-
-### Step 3: Run the Rust RAG Engine
-
-From the `engine/` directory, compile and launch the gRPC data plane:
-
-```bash
-cd engine
-cargo run --release
-```
-
-The engine will spin up its gRPC server listening on port `50051`.
-
-### Step 4: Run the Go API Gateway
-
-From the `gateway/` directory, run the control plane HTTP server:
-
-```bash
-cd gateway
-go run main.go
-```
-
-The gateway will run on port `8080`, exposing the following endpoints:
-- `POST /v1/documents` - Upload and index heterogeneous documents.
-- `POST /v1/query` - Request a RAG pipeline response.
-- `GET /v1/graph` - Retrieve mapped graph entities and subgraphs.
-
----
-
-## 📊 Evaluation & Tracing
-
-### Distributed Tracing with Jaeger
-
-Shrag features full OpenTelemetry tracing. When you query the system, traces are collected automatically. 
-
-1. Access the Jaeger UI at `http://localhost:16686` in your browser.
-2. Select `gateway` or `engine` from the service list.
-3. Analyze detailed trace flows to pinpoint parsing latency, gRPC trip times, vector retrieval performance, or downstream LLM completion times.
-
-### Offline LLM-As-A-Judge Evaluation
-
-To measure retrieval accuracy and generated output metrics:
-
-1. Navigate to the `eval/` directory.
-2. Install Python dependencies: `pip install -r requirements.txt` (or install `openai` and `pandas`).
-3. Run the evaluation script:
-
-```bash
-python eval/eval.py
-```
-
-The script will query the Go Gateway, run a test corpus through the system, run evaluations on Context Precision, Retrieval Recall, Groundedness, and Faithfulness, and print a formatted summary table.
+### Phase 5: Observability & Validation
+* Add OpenTelemetry tracing instrumentation to Go routes and Rust retrieval/LLM endpoints.
+* Implement the offline LLM-as-a-judge script (`eval.py`) to run benchmarking.

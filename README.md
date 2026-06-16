@@ -1,10 +1,10 @@
-# Shrag 🚀
+# Lancet 🚀
 
 > [!NOTE]
 > **Project Status: Planning & Pre-Start Phase**
 > This repository currently contains the architectural design blueprints, brainstorming files, and the implementation plan. No source code has been written yet. Development will begin shortly following the roadmap detailed below.
 
-**Shrag** is an end-to-end, high-performance, systems-oriented Retrieval-Augmented Generation (RAG) and GraphRAG platform. Built to showcase robust systems engineering and data-plane design, it employs a split-service architecture that separates a user-facing control plane from a high-performance, custom-built data plane.
+**Lancet** is an end-to-end, high-performance, systems-oriented Retrieval-Augmented Generation (RAG) and GraphRAG platform. Built to showcase robust systems engineering and data-plane design, it employs a split-service architecture that separates a user-facing control plane from a high-performance, custom-built data plane.
 
 ---
 
@@ -12,9 +12,9 @@
 
 Most modern RAG applications are built using high-level orchestration frameworks (like LangChain or LlamaIndex) and pre-packaged API wrappers. While convenient, this approach hides the underlying data-plane complexities, database access patterns, and performance characteristics. 
 
-**Shrag** is a project designed to show high-level backend systems engineering depth by building the core data-plane components from scratch. Instead of using off-the-shelf wrappers, Shrag implements custom chunkers, indexing, query retrieval, and graph traversals in **Rust**, linking them to a lightweight **Go** control-plane gateway via **gRPC**. 
+**Lancet** is a project designed to show high-level backend systems engineering depth by building the core data-plane components from scratch. Instead of using off-the-shelf wrappers, Lancet implements custom chunkers, indexing, query retrieval, and graph traversals in **Rust**, linking them to a lightweight **Go** control-plane gateway via **gRPC**. 
 
-By focusing on custom-built database operations and explicit microservice boundaries, Shrag demonstrates how to optimize latency-sensitive AI workloads while maintaining production-grade type safety and observability.
+By focusing on custom-built database operations and explicit microservice boundaries, Lancet demonstrates how to optimize latency-sensitive AI workloads while maintaining production-grade type safety and observability.
 
 ---
 
@@ -73,7 +73,7 @@ Currently, the repository contains the following planning and design documents:
 We will build the codebase across five key phases:
 
 ### Phase 1: gRPC Contract & Environment Setup
-* Define the protobuf messages and service API in `proto/shrag.proto`.
+* Define the protobuf messages and service API in `proto/lancet.proto`.
 * Configure `docker-compose.yml` to spin up PostgreSQL and Jaeger.
 * Scaffold the Rust `engine` and Go `gateway` project workspaces.
 

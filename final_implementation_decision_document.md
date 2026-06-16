@@ -1,6 +1,6 @@
-# Shrag: Final Implementation Decision Document
+# Lancet: Final Implementation Decision Document
 
-This document summarizes the finalized architectural, storage, and design decisions for the **Shrag** project, as resolved during the `/grill-me` interactive planning session.
+This document summarizes the finalized architectural, storage, and design decisions for the **Lancet** project, as resolved during the `/grill-me` interactive planning session.
 
 ---
 

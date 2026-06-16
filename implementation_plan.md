@@ -1,6 +1,6 @@
-# Shrag Implementation Plan
+# Lancet Implementation Plan
 
-Shrag is an end-to-end, high-performance, systems-oriented Retrieval-Augmented Generation (RAG) and GraphRAG platform. It features a split-service architecture: a user-facing API gateway in Go (control plane) and a high-performance RAG and document processing engine in Rust (data plane) communicating via gRPC. 
+Lancet is an end-to-end, high-performance, systems-oriented Retrieval-Augmented Generation (RAG) and GraphRAG platform. It features a split-service architecture: a user-facing API gateway in Go (control plane) and a high-performance RAG and document processing engine in Rust (data plane) communicating via gRPC. 
 
 The project emphasizes systems programming, custom core data-plane mechanisms (chunking, hybrid retrieval, graph traversal), and production-grade observability (OpenTelemetry tracing, LLM-as-a-judge evaluation).
 
@@ -23,7 +23,7 @@ Please review the architectural choices and proposed file structure. The system 
 
 ### 1. Protobuf Definitions (gRPC Contract)
 
-#### [NEW] [shrag.proto](file:///c:/Users/user3/Shrag/proto/shrag.proto)
+#### [NEW] [lancet.proto](file:///d:/Repos/shrag/proto/lancet.proto)
 Defines the gRPC interface between the Go API Gateway and the Rust RAG Engine:
 - `IngestDocument(Stream IngestRequest) returns (IngestResponse)`
 - `QueryRAG(QueryRequest) returns (QueryResponse)`
@@ -33,7 +33,7 @@ Defines the gRPC interface between the Go API Gateway and the Rust RAG Engine:
 
 ### 2. Rust RAG Engine (`engine`)
 
-#### [NEW] [Cargo.toml](file:///c:/Users/user3/Shrag/engine/Cargo.toml)
+#### [NEW] [Cargo.toml](file:///d:/Repos/shrag/engine/Cargo.toml)
 Configures dependencies for the Rust service:
 - `tonic`/`prost` for gRPC.
 - `lancedb` for vector storage.
@@ -64,23 +64,23 @@ Implements the RAG state machine: query reformulation, GraphRAG sub-graph extrac
 
 ### 3. Go API Gateway (`gateway`)
 
-#### [NEW] [go.mod](file:///c:/Users/user3/Shrag/gateway/go.mod)
+#### [NEW] [go.mod](file:///d:/Repos/shrag/gateway/go.mod)
 Defines Go dependencies: `gin` or standard library for HTTP server, `pgx` for PostgreSQL, `google.golang.org/grpc`, `go.opentelemetry.io`.
 
-#### [NEW] [main.go](file:///c:/Users/user3/Shrag/gateway/main.go)
+#### [NEW] [main.go](file:///d:/Repos/shrag/gateway/main.go)
 Initializes Go HTTP server, session/auth middleware, and handles routing. Exposes endpoints for:
 - Document upload (`POST /v1/documents`)
 - RAG Query (`POST /v1/query`)
 - Graph Query (`GET /v1/graph`)
 
-#### [NEW] [db.go](file:///c:/Users/user3/Shrag/gateway/db.go)
+#### [NEW] [db.go](file:///d:/Repos/shrag/gateway/db.go)
 Handles PostgreSQL database connection, user sessions, and document metadata persistence.
 
 ---
 
 ### 4. Infrastructure & Deployment
 
-#### [NEW] [docker-compose.yml](file:///c:/Users/user3/Shrag/docker-compose.yml)
+#### [NEW] [docker-compose.yml](file:///d:/Repos/shrag/docker-compose.yml)
 Defines services for:
 - PostgreSQL (Go metadata database).
 - Jaeger (OpenTelemetry tracing backend).

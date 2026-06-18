@@ -84,6 +84,15 @@
 Plans:
 - [ ] TBD (promote with /gsd-review-backlog when ready)
 
+### Phase 999.5: Compile-Time Semantics on Graph Nodes (BACKLOG)
+
+**Goal:** Pre-compute node and edge summaries during indexing so traversers read rich pre-built context instead of re-deriving meaning at query time (closely related to Phase 999.1).
+**Requirements:** TBD
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (promote with /gsd-review-backlog when ready)
+
 ### Phase 999.2: Reranking (BACKLOG)
 
 **Goal:** A second-pass cross-encoder model to re-score merged retrieval candidates.
@@ -96,6 +105,24 @@ Plans:
 ### Phase 999.3: Query Reformulation Strategies (BACKLOG)
 
 **Goal:** LLM-based query expansion techniques like HyDE and multi-query expansion.
+**Requirements:** TBD
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (promote with /gsd-review-backlog when ready)
+
+### Phase 999.4: LLM-Assisted Synthesis at Ingestion Time (BACKLOG)
+
+**Goal:** Generate synthesized, consolidated prose descriptions for extracted entities/relationships during document ingestion and store them in LanceDB alongside vectors.
+**Requirements:** TBD
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (promote with /gsd-review-backlog when ready)
+
+### Phase 999.6: Knowledge Drift Detection and Node Merging (BACKLOG)
+
+**Goal:** Implement semantic entity resolution and node merging using vector similarity and LLM verification to maintain a self-healing, clean knowledge graph.
 **Requirements:** TBD
 **Plans:** 0 plans
 

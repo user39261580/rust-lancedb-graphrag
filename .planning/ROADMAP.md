@@ -31,7 +31,7 @@
 1. Users can upload a document via the Go HTTP API.
 2. Rust engine receives document via gRPC and chunks it.
 3. Chunks and embeddings are successfully stored in an embedded LanceDB instance.
-4. Schema includes community_ids array placeholder field on nodes and registers placeholder communities table.
+4. Schema includes community_ids array placeholder field on nodes and registers placeholder communities table (Port for 999.1).
 5. Schema includes nullable summary (Text) and summary_vector (Float Array) columns on nodes (Port for 999.4) and edges (Port for 999.5), plus unsummarized_refs (Text Array) on nodes (Port for 999.4).
 6. Define EntityResolver Rust trait and ExactMatchResolver pass-through implementation (Port for 999.6).
 7. Implement pass-through Tokio channel worker task in Rust engine (Port for 999.4).
@@ -44,7 +44,7 @@
 1. Rust engine can perform hybrid (vector + BM25) search against LanceDB.
 2. Go gateway exposes an endpoint to ask a question and receives an LLM-generated answer using retrieved context.
 3. System falls back gracefully if vector retrieval fails (degraded mode).
-4. Define pluggable async Reranker trait and NoOpReranker pass-through implementation.
+4. Define pluggable async Reranker trait and NoOpReranker pass-through implementation (Port for 999.2).
 
 ### Phase 4: Knowledge Graph Extraction & Query
 **Goal:** Extract entities/relations, store in LanceDB, and compile into context
@@ -65,7 +65,7 @@
 2. Workflow events (node started, chunk generated, completed) stream from Rust to Go to Client.
 3. Node timeouts and retries handle failure scenarios predictably.
 4. Snapshots of the workflow state can be captured for debugging.
-5. QueryReformulator trait defined with pass-through node in state machine.
+5. QueryReformulator trait defined with pass-through node in state machine (Port for 999.3).
 
 ### Phase 6: Observability, Evaluation & Polish
 **Goal:** Add OpenTelemetry tracing, offline eval script, and README
